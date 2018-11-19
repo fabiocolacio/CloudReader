@@ -1,3 +1,4 @@
+	
 package main
 
 import(
@@ -6,5 +7,8 @@ import(
 
 func main() {
     fmt.Println("Hello world")
+	fmt.Println("Hi")
+fmt.Println("Hi") 
 }
+
 
