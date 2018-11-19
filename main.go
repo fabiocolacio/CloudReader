@@ -1,4 +1,3 @@
-
 package main
 
 import(
@@ -11,8 +10,6 @@ var(
     flagInit bool
     flagReset bool
 )
-
-// cloudreader --init
 
 func main() {
     flag.BoolVar(&flagInit, "init", false, "Initializes databse tables.")
@@ -28,4 +25,6 @@ func main() {
         fmt.Println("Reseting tables!")
         server.ResetTables()
     }
+
+    server.ListenAndServe()
 }
