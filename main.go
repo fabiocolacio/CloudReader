@@ -1,4 +1,4 @@
-	
+
 package main
 
 import(
@@ -6,10 +6,7 @@ import(
 )
 
 func main() {
-    fmt.Println("Hello world")
+	fmt.Println("Hello world")
 	fmt.Println("Hi")
-fmt.Println("Hi") 
-    fmt.Println("This is a test.")
+	fmt.Println("This is a test.")
 }
-
-
