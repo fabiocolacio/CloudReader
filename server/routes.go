@@ -4,6 +4,7 @@ import(
     "net/http"
     "crypto/rand"
     "golang.org/x/crypto/pbkdf2"
+    "strconv"
 )
 
 var(
@@ -37,6 +38,45 @@ func routeHandler(res http.ResponseWriter, req *http.Request) {
         // TODO: If it is a GET request, send login HTML page
         // If it is a POST request, log them in or tell them if there is
         // na error
+
+        if req.Method == "GET" {
+          res.Write([]byte(`
+            <html>
+            <head>
+            <title> Login </title>
+            </head>
+            <body>
+            <h1> Login </h1>
+            <form action = "/login" method = "post">
+  Username:<br>
+  <input type="text" name="Username"><br>
+  Password:<br>
+  <input type = "password" name = "Password">
+  <input type = "submit" value = "Login">
+</form>
+</body>
+</html>
+`))
+        } else {
+          req.ParseForm()
+          username := req.FormValue("Username")
+          password := req.FormValue("Password")
+
+          uid, err := CheckUser(username, password)
+          if err == nil {
+            res.WriteHeader(http.StatusOK)
+
+            session := http.Cookie{
+              Name: "session",
+              Value: strconv.Itoa(uid),
+            }
+
+            http.SetCookie(res, &session)
+
+          } else {
+            res.Write([]byte(err.Error()))
+          }
+        }
 
     case "/register":
         // TODO: If it is a GET request, send the register HTML page
@@ -108,4 +148,9 @@ func ReadBody(req *http.Request) (body []byte, err error) {
     }
 
     return body, err
+}
+
+
+func HashAndSaltPassword(password []byte, salt []byte) []byte{
+    return pbkdf2.Key(password, salt, KeyHashIterations, KeyHashLength, KeyHashAlgo)
 }

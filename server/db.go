@@ -5,6 +5,7 @@ import(
     "database/sql"
     _ "github.com/go-sql-driver/mysql"
     "errors"
+    "crypto/subtle"
 )
 
 var(
@@ -43,6 +44,28 @@ if row.Scan(&uid) == sql.ErrNoRows {
 
 return err
 }
+
+
+func CheckUser(username string, password string) (int, error){
+  row := db.QueryRow("select uid, salt, saltedhash from users where username = ?;", username)
+  var(
+    uid int
+    salt []byte
+    expectedsaltedhash []byte
+  )
+
+  if row.Scan(&uid, &salt, &expectedsaltedhash) == sql.ErrNoRows {
+    return uid, ErrInvalidCredentials
+  } else {
+    saltedhash := HashAndSaltPassword([]byte(password), salt)
+    if subtle.ConstantTimeCompare(expectedsaltedhash, saltedhash) == 1{
+      return uid, nil
+    }
+  }
+
+  return 0, ErrInvalidCredentials
+}
+
 
 func InitTables() error {
     query := fmt.Sprintf(
