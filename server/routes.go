@@ -2,6 +2,8 @@ package server
 
 import(
     "net/http"
+    "crypto/rand"
+    "golang.org/x/crypto/pbkdf2"
 )
 
 var(
@@ -39,6 +41,43 @@ func routeHandler(res http.ResponseWriter, req *http.Request) {
     case "/register":
         // TODO: If it is a GET request, send the register HTML page
         //If it is a POST request, add user to database or send back error
+        if req.Method == "GET" {
+          res.Write([]byte(`
+            <html>
+            <head>
+            <title> Register </title>
+            </head>
+            <body>
+            <h1> Register </h1>
+            <form action = "/register" method = "post">
+  Username:<br>
+  <input type="text" name="Username"><br>
+  Password:<br>
+  <input type = "password" name = "Password">
+  <input type = "submit" value = "register">
+</form>
+</body>
+</html>
+`))
+        } else {
+          req.ParseForm()
+          username := req.FormValue("Username")
+          password := req.FormValue("Password")
+          //fmt.Println(username)
+          //fmt.Println(password)
+          salt := make([]byte, SaltLength)
+          rand.Read(salt)
+          saltedhash := pbkdf2.Key([]byte(password), salt, KeyHashIterations, KeyHashLength, KeyHashAlgo)
+          err := AddUsers(username, salt, saltedhash)
+
+          if err == nil {
+            res.WriteHeader(http.StatusOK)
+          } else {
+            res.Write([]byte(err.Error()))
+          }
+
+        }
+
 
     case "/library":
         // TODO: Send HTML for the user's library
@@ -61,7 +100,7 @@ func routeHandler(res http.ResponseWriter, req *http.Request) {
 }
 
 func ReadBody(req *http.Request) (body []byte, err error) {
-    body = make([]byte, req.ContentLength) 
+    body = make([]byte, req.ContentLength)
     read, err := req.Body.Read(body);
 
     if int64(read) == req.ContentLength {
@@ -70,4 +109,3 @@ func ReadBody(req *http.Request) (body []byte, err error) {
 
     return body, err
 }
-

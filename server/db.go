@@ -4,10 +4,14 @@ import(
     "fmt"
     "database/sql"
     _ "github.com/go-sql-driver/mysql"
+    "errors"
 )
 
 var(
     db *sql.DB
+    ErrInvalidCredentials error = errors.New("Invalid username or password.")
+    ErrUsernameTaken error = errors.New("Username already taken.")
+    ErrRegistrationFailed error = errors.New("Failed to register user.")
 )
 
 func init() {
@@ -18,6 +22,26 @@ func init() {
     if err != nil {
         fmt.Println(err)
     }
+}
+
+func AddUsers(username string, salt []byte, saltedhash []byte) error{
+  row := db.QueryRow("select uid from users where username = ?;", username)
+var err error
+var uid int
+if row.Scan(&uid) == sql.ErrNoRows {
+
+    _, err = db.Exec(
+        `insert into users (username, salt, saltedhash) values (?, ?, ?);`,
+        username, salt, saltedhash)
+
+    if err != nil {
+        err = ErrRegistrationFailed
+    }
+} else {
+    err = ErrUsernameTaken
+}
+
+return err
 }
 
 func InitTables() error {
@@ -66,4 +90,3 @@ func ResetTables() error {
 
     return err
 }
-
