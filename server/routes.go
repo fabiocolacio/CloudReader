@@ -28,6 +28,9 @@ func routeHandler(res http.ResponseWriter, req *http.Request) {
     case "/":
         // TODO: Show home page
 
+    case "/test":
+        // TODO: Check if session cookies work
+
     case "/login":
         // TODO: If it is a GET request, send login HTML page
         // If it is a POST request, log them in or tell them if there is
