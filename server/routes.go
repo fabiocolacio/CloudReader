@@ -6,6 +6,8 @@ import(
     "golang.org/x/crypto/pbkdf2"
     "strconv"
     "fmt"
+    "io/ioutil"
+    //"mime/multipart"
 )
 
 var(
@@ -134,18 +136,79 @@ func routeHandler(res http.ResponseWriter, req *http.Request) {
 
 
     case "/library":
+      uid := VerifyUser(req)
+      if uid != 0 {
+
+      } else {
+        res.Write([]byte(`You are not logged in`))
+      }
         // TODO: Send HTML for the user's library
         // Users can logout, upload book, or read book
 
+
     case "/logout":
+      uid := VerifyUser(req)
+      if uid != 0 {
+
+      } else {
+        res.Write([]byte(`You are not logged in`))
+      }
+
         // TODO: Log user out and send back to home page
 
     case "/upload":
+      uid := VerifyUser(req)
+      if uid != 0 {
+        if req.Method == "GET" {
+        res.Write([]byte(`
+          <html>
+          <head>
+          <title> Upload </title>
+          </head>
+          <body>
+          <h1> Upload </h1>
+          <body>
+          <form action = "/upload" method = "post" enctype = "multipart/form-data">
+          <p>
+          Please specify a file, or a set of files:<br>
+          <input type="file" name="datafile">
+          </p>
+          <div>
+          <input type="submit" value="Send">
+          </div>
+          </form>
+          </body>
+          </html>
+          `))
+        } else {
+          file,header,err := req.FormFile("datafile")
+          if err != nil {
+            res.Write([]byte("Upload failed"))
+            break
+          }
+          res.Write([]byte(header.Filename))
+          filename := header.Filename
+          data,err := ioutil.ReadAll(file)
+          err = UploadFile(filename, data, uid)
+          if err != nil {
+            fmt.Println(err)
+          }
+
+        }
+      } else {
+        res.Write([]byte(`You are not logged in`))
+      }
         // TODO: Send HTML to the upload page if it is a GET request.
         // If it is a POST request, add the book to the database, etc.
         // Send user to Library.
 
     case "/read":
+      uid := VerifyUser(req)
+      if uid != 0 {
+
+      } else {
+        res.Write([]byte(`You are not logged in`))
+      }
         // TODO: Send HTML to read the book
 
     default:

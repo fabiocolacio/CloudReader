@@ -17,7 +17,7 @@ const(
     SaltLength int = 16
     KeyHashLength int = 16
     KeyHashIterations int = 250000
-    BookHashLength int = 16
+    BookHashLength int = 32
     PathMaxLength int = 100
 
 )

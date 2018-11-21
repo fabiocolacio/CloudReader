@@ -6,6 +6,7 @@ import(
     _ "github.com/go-sql-driver/mysql"
     "errors"
     "crypto/subtle"
+    "crypto/sha256"
 )
 
 var(
@@ -84,6 +85,7 @@ func InitTables() error {
             owner int,
             data longblob,
             hash binary(%d),
+            name varchar(256),
             primary key (owner, hash),
             foreign key (owner) references users(uid));`,
         BookHashLength)
@@ -118,4 +120,15 @@ func UserExists(uid int) bool {
   row := db.QueryRow("select 1 from users where uid = ?;", uid)
 
   return row.Scan(nil) != sql.ErrNoRows
+}
+
+func UploadFile(filename string, data []byte, owner int) error{
+  hasher := sha256.New()
+  hasher.Write(data)
+  hash := hasher.Sum(nil)
+
+  _, err := db.Exec(`
+  INSERT INTO BOOKS (DATA, NAME, HASH, OWNER)
+  VALUES (?, ?, ?, ?)`, data, filename, hash, owner)
+  return err
 }
