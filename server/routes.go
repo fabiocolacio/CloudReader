@@ -5,6 +5,7 @@ import(
     "crypto/rand"
     "golang.org/x/crypto/pbkdf2"
     "strconv"
+    "fmt"
 )
 
 var(
@@ -48,15 +49,15 @@ func routeHandler(res http.ResponseWriter, req *http.Request) {
             <body>
             <h1> Login </h1>
             <form action = "/login" method = "post">
-  Username:<br>
-  <input type="text" name="Username"><br>
-  Password:<br>
-  <input type = "password" name = "Password">
-  <input type = "submit" value = "Login">
-</form>
-</body>
-</html>
-`))
+              Username:<br>
+                <input type="text" name="Username"><br>
+              Password:<br>
+                <input type = "password" name = "Password">
+                <input type = "submit" value = "Login">
+            </form>
+            </body>
+            </html>
+            `))
         } else {
           req.ParseForm()
           username := req.FormValue("Username")
@@ -64,13 +65,20 @@ func routeHandler(res http.ResponseWriter, req *http.Request) {
 
           uid, err := CheckUser(username, password)
           if err == nil {
-            res.WriteHeader(http.StatusOK)
 
             session := http.Cookie{
               Name: "session",
               Value: strconv.Itoa(uid),
-            }
 
+              MaxAge: 10 * 60,
+              Secure: false,
+              HttpOnly: true,
+              SameSite: 1,
+
+              Path: "/",
+
+            }
+            fmt.Println(session)
             http.SetCookie(res, &session)
 
           } else {
