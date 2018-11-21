@@ -171,10 +171,10 @@ func HashAndSaltPassword(password []byte, salt []byte) []byte{
 
 func VerifyUser(req *http.Request) int{
   cookie,err := req.Cookie("session")
-  if err == ErrNoCookie {
+  if err == http.ErrNoCookie {
     return 0;
   }
-  uid := strconv.Atoi(cookie.Value)
+  uid,_ := strconv.Atoi(cookie.Value)
 
   if UserExists(uid) {
     return uid
