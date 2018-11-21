@@ -35,11 +35,10 @@ func InitTables() error {
     query = fmt.Sprintf(
         `create table books(
             owner int,
-            path varchar(%d),
+            data longblob,
             hash binary(%d),
-            primary key (owner, path),
+            primary key (owner, hash),
             foreign key (owner) references users(uid));`,
-        PathMaxLength,
         BookHashLength)
     _, err = db.Exec(query)
     if err != nil {
