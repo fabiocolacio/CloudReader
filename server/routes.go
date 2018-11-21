@@ -34,6 +34,12 @@ func routeHandler(res http.ResponseWriter, req *http.Request) {
 
     case "/test":
         // TODO: Check if session cookies work
+        uid := VerifyUser(req)
+        if uid == 0 {
+          res.Write([]byte(`Wrong Login Information`))
+        } else {
+          res.Write([]byte(`You have logged in`))
+        }
 
     case "/login":
         // TODO: If it is a GET request, send login HTML page
@@ -161,4 +167,18 @@ func ReadBody(req *http.Request) (body []byte, err error) {
 
 func HashAndSaltPassword(password []byte, salt []byte) []byte{
     return pbkdf2.Key(password, salt, KeyHashIterations, KeyHashLength, KeyHashAlgo)
+}
+
+func VerifyUser(req *http.Request) int{
+  cookie,err := req.Cookie("session")
+  if err == ErrNoCookie {
+    return 0;
+  }
+  uid := strconv.Atoi(cookie.Value)
+
+  if UserExists(uid) {
+    return uid
+  }
+  return 0;
+
 }

@@ -113,3 +113,9 @@ func ResetTables() error {
 
     return err
 }
+
+func UserExists(uid int) bool {
+  row := db.QueryRow("select 1 from users where uid = ?;", uid)
+
+  return row.Scan(nil) != sql.ErrNoRows
+}
