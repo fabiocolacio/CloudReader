@@ -132,3 +132,11 @@ func UploadFile(filename string, data []byte, owner int) error{
   VALUES (?, ?, ?, ?)`, data, filename, hash, owner)
   return err
 }
+
+func GetFile(uid int, name string) ([]byte, error){
+  row := db.QueryRow("select data from books where owner = ? AND name = ?;", uid, name)
+
+  var data []byte
+  err := row.Scan(&data)
+  return data, err
+}

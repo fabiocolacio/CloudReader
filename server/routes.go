@@ -78,7 +78,7 @@ func routeHandler(res http.ResponseWriter, req *http.Request) {
               Name: "session",
               Value: strconv.Itoa(uid),
 
-              MaxAge: 10 * 60,
+              //MaxAge: 10 * 60,
               Secure: false,
               HttpOnly: true,
               SameSite: 1,
@@ -205,7 +205,14 @@ func routeHandler(res http.ResponseWriter, req *http.Request) {
     case "/read":
       uid := VerifyUser(req)
       if uid != 0 {
-
+        name := req.URL.Query().Get("name");
+        //res.Write([]byte(name))
+        data, err := GetFile(uid,name)
+        if (err == nil) {
+          res.Write(data)
+        } else {
+          fmt.Println(err)
+        }
       } else {
         res.Write([]byte(`You are not logged in`))
       }
