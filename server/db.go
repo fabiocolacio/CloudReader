@@ -128,7 +128,7 @@ func UploadFile(filename string, data []byte, owner int) error{
   hash := hasher.Sum(nil)
 
   _, err := db.Exec(`
-  INSERT INTO BOOKS (DATA, NAME, HASH, OWNER)
+  INSERT INTO books (DATA, NAME, HASH, OWNER)
   VALUES (?, ?, ?, ?)`, data, filename, hash, owner)
   return err
 }
