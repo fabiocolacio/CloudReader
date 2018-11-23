@@ -233,22 +233,3 @@ func ReadBody(req *http.Request) (body []byte, err error) {
 
     return body, err
 }
-
-
-func HashAndSaltPassword(password []byte, salt []byte) []byte{
-    return pbkdf2.Key(password, salt, KeyHashIterations, KeyHashLength, KeyHashAlgo)
-}
-
-func VerifyUser(req *http.Request) int{
-  cookie,err := req.Cookie("session")
-  if err == http.ErrNoCookie {
-    return 0;
-  }
-  uid,_ := strconv.Atoi(cookie.Value)
-
-  if UserExists(uid) {
-    return uid
-  }
-  return 0;
-
-}
