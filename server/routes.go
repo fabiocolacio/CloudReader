@@ -96,7 +96,6 @@ func LoginRoute(res http.ResponseWriter, req *http.Request) {
 
                 Path: "/",
             }
-            fmt.Println(session)
             http.SetCookie(res, &session)
 
         } else {
@@ -143,12 +142,18 @@ func RegisterRoute(res http.ResponseWriter, req *http.Request) {
 }
 
 func LogoutRoute(res http.ResponseWriter, req *http.Request) {
-    uid := VerifyUser(req)
-    if uid != 0 {
+    session := http.Cookie{
+        Name:  "session",
+        Value: strconv.Itoa(-1),
 
-    } else {
-        res.Write([]byte(`You are not logged in`))
+        //MaxAge: 10 * 60,
+        Secure:   false,
+        HttpOnly: true,
+        SameSite: 1,
+
+        Path: "/",
     }
+    http.SetCookie(res, &session)
 }
 
 func LibraryRoute(res http.ResponseWriter, req *http.Request) {
