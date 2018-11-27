@@ -138,3 +138,16 @@ func GetFile(uid int, name string) ([]byte, error) {
 	err := row.Scan(&data)
 	return data, err
 }
+
+func ShowBooks(uid int) ([]string, error) {
+	var books []string
+	rows, err := db.Query("select name from books where owner = ?;", uid)
+	for rows.Next() {
+		var book string
+		if err = rows.Scan(&book); err != nil {
+			return books, err
+		}
+		books = append(books,book)
+	}
+	return books,err
+}

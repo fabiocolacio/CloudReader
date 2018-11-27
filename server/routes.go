@@ -145,7 +145,7 @@ func RegisterRoute(res http.ResponseWriter, req *http.Request) {
 func LogoutRoute(res http.ResponseWriter, req *http.Request) {
     uid := VerifyUser(req)
     if uid != 0 {
-
+			
     } else {
         res.Write([]byte(`You are not logged in`))
     }
@@ -154,6 +154,7 @@ func LogoutRoute(res http.ResponseWriter, req *http.Request) {
 func LibraryRoute(res http.ResponseWriter, req *http.Request) {
     uid := VerifyUser(req)
     if uid != 0 {
+			books = showBooks(uid)
 
     } else {
         res.Write([]byte(`You are not logged in`))
