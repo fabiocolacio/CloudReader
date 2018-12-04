@@ -173,8 +173,10 @@ func LibraryRoute(res http.ResponseWriter, req *http.Request) {
             `))
 
             for i := 0; i < len(bookString); i++ {
-                fmt.Fprintf(res,`<tr><td>
-                  <a href="/read?name=%s">%s</a></td></tr>`,bookString[i], bookString[i])
+                fmt.Fprintf(res,`<tr>
+                    <td><a href="/read?name=%s">%s</a></td>
+                    <td><a href="/read?name=%s" download="%s">download</a></td></tr>`,
+                    bookString[i], bookString[i], bookString[i], bookString[i])
             }
             res.Write([]byte(`</table></body></html>`))
         } else {
