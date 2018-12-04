@@ -169,6 +169,8 @@ func LibraryRoute(res http.ResponseWriter, req *http.Request) {
             </head>
             <body>
             <h1> Title </h1>
+            <a href="/upload">Upload Book</a>
+            <a href="/logout">Logout</a>
             <table>
             `))
 
