@@ -97,8 +97,7 @@ func LoginRoute(res http.ResponseWriter, req *http.Request) {
                 Path: "/",
             }
             http.SetCookie(res, &session)
-            res.Header().Set("Location", "/library")
-            res.WriteHeader(300)
+            Redirect("/library", res)
         } else {
             res.Write([]byte(err.Error()))
         }
@@ -134,11 +133,11 @@ func RegisterRoute(res http.ResponseWriter, req *http.Request) {
         saltedhash := pbkdf2.Key([]byte(password), salt, KeyHashIterations, KeyHashLength, KeyHashAlgo)
         err := AddUsers(username, salt, saltedhash)
 
-        if err == nil {
-            res.WriteHeader(http.StatusOK)
-        } else {
+        if err != nil {
             res.Write([]byte(err.Error()))
         }
+
+        Redirect("/login", res)
     }
 }
 
@@ -155,6 +154,7 @@ func LogoutRoute(res http.ResponseWriter, req *http.Request) {
         Path: "/",
     }
     http.SetCookie(res, &session)
+    Redirect("/login", res)
 }
 
 func LibraryRoute(res http.ResponseWriter, req *http.Request) {
@@ -260,4 +260,9 @@ func ReadBody(req *http.Request) (body []byte, err error) {
 	}
 
 	return body, err
+}
+
+func Redirect(loc string, res http.ResponseWriter) {
+    res.Header().Set("Location", loc)
+    res.WriteHeader(302)
 }
