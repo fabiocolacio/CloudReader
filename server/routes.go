@@ -33,19 +33,26 @@ func routeHandler(res http.ResponseWriter, req *http.Request) {
 	case "/test": TestRoute(res, req)
 	case "/login": LoginRoute(res, req)
 	case "/register": RegisterRoute(res, req)
-    case "/logout": LogoutRoute(res, req)
+  case "/logout": LogoutRoute(res, req)
 	case "/library": LibraryRoute(res, req)
 	case "/upload": UploadRoute(res, req)
 	case "/read": ReadRoute(res, req)
-	default: NotFoundRoute(res, req)
+	default: data,err := ioutil.ReadFile(path[1:])
+						if err != nil{
+								NotFoundRoute(res, req)
+						} else {
+								res.Write(data)
+						}
+
 	}
 }
 
 func HomeRoute(res http.ResponseWriter, req *http.Request) {
-    res.Write([]byte(`<h1>CloudReader</h1>
+    res.Write([]byte(`
+		<h1><img src="cloudreader.jpg" alt="logo width="600" height="200"" /></h1>
 		<body>
-		<a href="/login">Login</a>
-		<a href="/register">Register</a>
+		<br><a href="/login"><font size="+3">Login</font></a></br>
+		<br><a href="/register"><font size="+3">Register</font></a></br>
 		</body>
 		`))
 }
@@ -174,8 +181,9 @@ func LibraryRoute(res http.ResponseWriter, req *http.Request) {
             </head>
             <body>
             <h1> Library </h1>
-            <a href="/upload">Upload Book</a>
-            <a href="/logout">Logout</a>
+            <a href="/upload"><font size="+2">Upload Book</font></a>
+            <a href="/logout"><font size="+2">Logout</font></a>
+						<br></br>
             <table>
             `))
 
@@ -253,6 +261,7 @@ func ReadRoute(res http.ResponseWriter, req *http.Request) {
         res.Write([]byte(`You are not logged in`))
     }
 }
+
 
 func ReadBody(req *http.Request) (body []byte, err error) {
 	body = make([]byte, req.ContentLength)
