@@ -97,7 +97,8 @@ func LoginRoute(res http.ResponseWriter, req *http.Request) {
                 Path: "/",
             }
             http.SetCookie(res, &session)
-
+            res.Header().Set("Location", "/library")
+            res.WriteHeader(300)
         } else {
             res.Write([]byte(err.Error()))
         }
@@ -159,27 +160,25 @@ func LogoutRoute(res http.ResponseWriter, req *http.Request) {
 func LibraryRoute(res http.ResponseWriter, req *http.Request) {
     uid := VerifyUser(req)
     if uid != 0 {
-        if req.Method == "GET" {
-            bookString, err := ShowBooks(uid)
-            if err == nil{
-              res.Write([]byte(`
-                <html>
-                <head>
-                <title> Library </title>
-                </head>
-                <body>
-                <h1> Title </h1>
-                <table>
-                `))
+        bookString, err := ShowBooks(uid)
+        if err == nil{
+          res.Write([]byte(`
+            <html>
+            <head>
+            <title> Library </title>
+            </head>
+            <body>
+            <h1> Title </h1>
+            <table>
+            `))
 
-                for i := 0; i < len(bookString); i++ {
-                    fmt.Fprintf(res,`<tr><td>
-                      <a href="/read?name=%s">%s</a></td></tr>`,bookString[i], bookString[i])
-                }
-                res.Write([]byte(`</table></body></html>`))
-            } else {
-                res.Write([]byte(`You have no book.`))
+            for i := 0; i < len(bookString); i++ {
+                fmt.Fprintf(res,`<tr><td>
+                  <a href="/read?name=%s">%s</a></td></tr>`,bookString[i], bookString[i])
             }
+            res.Write([]byte(`</table></body></html>`))
+        } else {
+            res.Write([]byte(`You have no book.`))
         }
     } else {
         res.Write([]byte(`You are not logged in`))
