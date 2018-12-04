@@ -42,7 +42,12 @@ func routeHandler(res http.ResponseWriter, req *http.Request) {
 }
 
 func HomeRoute(res http.ResponseWriter, req *http.Request) {
-    res.Write([]byte("<h1>Hello World!</h1>"))
+    res.Write([]byte(`<h1>CloudReader</h1>
+		<body>
+		<a href="/login">Login</a>
+		<a href="/register">Register</a>
+		</body>
+		`))
 }
 
 func NotFoundRoute(res http.ResponseWriter, req *http.Request) {
@@ -168,7 +173,7 @@ func LibraryRoute(res http.ResponseWriter, req *http.Request) {
             <title> Library </title>
             </head>
             <body>
-            <h1> Title </h1>
+            <h1> Library </h1>
             <a href="/upload">Upload Book</a>
             <a href="/logout">Logout</a>
             <table>
@@ -219,9 +224,7 @@ func UploadRoute(res http.ResponseWriter, req *http.Request) {
                 res.Write([]byte("Upload failed"))
                 return
             }
-
-            res.Write([]byte(header.Filename))
-
+            //res.Write([]byte(header.Filename))
             filename := header.Filename
             data, err := ioutil.ReadAll(file)
 
@@ -229,12 +232,12 @@ func UploadRoute(res http.ResponseWriter, req *http.Request) {
             if err != nil {
                 fmt.Println(err)
             }
+						Redirect("/library", res)
         }
     } else {
         res.Write([]byte(`You are not logged in`))
     }
 }
-
 func ReadRoute(res http.ResponseWriter, req *http.Request) {
     uid := VerifyUser(req)
     if uid != 0 {
