@@ -33,17 +33,16 @@ func routeHandler(res http.ResponseWriter, req *http.Request) {
 	case "/test": TestRoute(res, req)
 	case "/login": LoginRoute(res, req)
 	case "/register": RegisterRoute(res, req)
-  case "/logout": LogoutRoute(res, req)
+    case "/logout": LogoutRoute(res, req)
 	case "/library": LibraryRoute(res, req)
 	case "/upload": UploadRoute(res, req)
 	case "/read": ReadRoute(res, req)
 	default: data,err := ioutil.ReadFile(path[1:])
-						if err != nil{
-								NotFoundRoute(res, req)
-						} else {
-								res.Write(data)
-						}
-
+    	if err != nil{
+    			NotFoundRoute(res, req)
+    	} else {
+    			res.Write(data)
+    	}
 	}
 }
 
@@ -195,7 +194,7 @@ func LibraryRoute(res http.ResponseWriter, req *http.Request) {
             }
             res.Write([]byte(`</table></body></html>`))
         } else {
-            res.Write([]byte(`You have no book.`))
+            res.Write([]byte(`You have no books. <a href="/upload">Upload one here</a>, or <a href="/logout">Logout</a>`))
         }
     } else {
         res.Write([]byte(`You are not logged in`))
