@@ -1,5 +1,7 @@
 package server
 
+//constants module contain all the constants used in the implementation
+//of the application.
 import (
 	"crypto/sha256"
 	"hash"

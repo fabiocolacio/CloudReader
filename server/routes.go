@@ -1,5 +1,7 @@
 package server
 
+//routes module contain all the essential functions to handle
+//all http requests.
 import (
 	"crypto/rand"
 	"fmt"
@@ -9,12 +11,14 @@ import (
 	"strconv"
 )
 
+//variable declarations
 var (
 	httpServer  *http.Server
 	httpsServer *http.Server
 	macKey      [256]byte
 )
 
+//initialize the server
 func init() {
 	httpServer = &http.Server{
 		Addr:    HttpAddr,
@@ -22,10 +26,15 @@ func init() {
 	}
 }
 
+//listening to the http requests
 func ListenAndServe() error {
 	return httpServer.ListenAndServe()
 }
 
+//routeHandler handle all the http requests.
+//res is the http ResponseWriter object user to write response back
+//to user request/.
+//req is the http request object
 func routeHandler(res http.ResponseWriter, req *http.Request) {
 	path := req.URL.Path
 	switch path {
@@ -46,6 +55,8 @@ func routeHandler(res http.ResponseWriter, req *http.Request) {
 	}
 }
 
+//HomeRoute is the response to the Homepage http request.
+//This route will show the homepage of the web app
 func HomeRoute(res http.ResponseWriter, req *http.Request) {
     res.Write([]byte(`
 		<h1><img src="cloudreader.jpg" alt="logo width="600" height="200"" /></h1>
@@ -56,10 +67,12 @@ func HomeRoute(res http.ResponseWriter, req *http.Request) {
 		`))
 }
 
+//NotFoundRoute respond with an error message when requested route is invalid
 func NotFoundRoute(res http.ResponseWriter, req *http.Request) {
     res.Write([]byte("Oopsie woopsie this doesn't exist."))
 }
 
+//TestRoute check the user login session
 func TestRoute(res http.ResponseWriter, req *http.Request) {
     uid := VerifyUser(req)
     if uid == 0 {
@@ -69,6 +82,7 @@ func TestRoute(res http.ResponseWriter, req *http.Request) {
     }
 }
 
+//LoginRoute display the user login interface.
 func LoginRoute(res http.ResponseWriter, req *http.Request) {
     if req.Method == "GET" {
         res.Write([]byte(`
@@ -115,6 +129,8 @@ func LoginRoute(res http.ResponseWriter, req *http.Request) {
     }
 }
 
+
+//RegisterRoute display the user registration interface.
 func RegisterRoute(res http.ResponseWriter, req *http.Request) {
     if req.Method == "GET" {
         res.Write([]byte(`
@@ -152,6 +168,7 @@ func RegisterRoute(res http.ResponseWriter, req *http.Request) {
     }
 }
 
+//LogourRoute log user out and destroy user login session
 func LogoutRoute(res http.ResponseWriter, req *http.Request) {
     session := http.Cookie{
         Name:  "session",
@@ -168,6 +185,7 @@ func LogoutRoute(res http.ResponseWriter, req *http.Request) {
     Redirect("/login", res)
 }
 
+//LibraryRoute display all the books the user have if the user is logged in
 func LibraryRoute(res http.ResponseWriter, req *http.Request) {
     uid := VerifyUser(req)
     if uid != 0 {
@@ -201,6 +219,8 @@ func LibraryRoute(res http.ResponseWriter, req *http.Request) {
     }
 }
 
+//UploadRoute display book upload interface where the user can pick a book file
+//from his device and upload it to the application.
 func UploadRoute(res http.ResponseWriter, req *http.Request) {
     uid := VerifyUser(req)
     if uid != 0 {
@@ -245,6 +265,8 @@ func UploadRoute(res http.ResponseWriter, req *http.Request) {
         res.Write([]byte(`You are not logged in`))
     }
 }
+
+//ReadRoute display the book the user chose.
 func ReadRoute(res http.ResponseWriter, req *http.Request) {
     uid := VerifyUser(req)
     if uid != 0 {
@@ -261,7 +283,8 @@ func ReadRoute(res http.ResponseWriter, req *http.Request) {
     }
 }
 
-
+//Readbody read the body of the http request.
+//req is the http Request object.
 func ReadBody(req *http.Request) (body []byte, err error) {
 	body = make([]byte, req.ContentLength)
 	read, err := req.Body.Read(body)
@@ -273,6 +296,9 @@ func ReadBody(req *http.Request) (body []byte, err error) {
 	return body, err
 }
 
+//Redirect function will redirect the user to a specified route
+//loc is the new route to redirect the user to.
+//res is the http RepsonseWriter object
 func Redirect(loc string, res http.ResponseWriter) {
     res.Header().Set("Location", loc)
     res.WriteHeader(302)
